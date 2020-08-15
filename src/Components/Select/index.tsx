@@ -5,13 +5,17 @@ import { Container } from './styles';
 const Select: React.FC = () => {
     const inputRef = useRef<HTMLInputElement>(null);
 
-    const [suggestions, setSuggestions] = useState<string[]>([]);
-
     const [options, setOptions] = useState([
         'Amora',
         'Maça',
         'Goiaba',
+        'Jabuticaba',
     ]);
+
+    const [suggestions, setSuggestions] = useState<string[]>(options);
+    const [isFocused, setIsFocused] = useState(false);
+
+    
 
     const handleInputChange = useCallback(() => {
         setSuggestions([]);
@@ -23,8 +27,17 @@ const Select: React.FC = () => {
             filter = options.sort().filter(item => regex.test(item));
 
             setSuggestions(filter);
-        }
-    }, [setSuggestions]);
+        } 
+    }, [options]);
+
+    const handleInputFocus = useCallback(() => {
+        setIsFocused(true);
+    }, [])
+
+    const handleInputBlur = useCallback(() => {
+        setIsFocused(false);
+        setSuggestions(options);
+    }, []);
 
     return (
         <Container>
@@ -32,13 +45,17 @@ const Select: React.FC = () => {
                 ref={inputRef}
                 type="text"
                 onChange={handleInputChange}
+                onFocus={handleInputFocus}
+                onBlur={handleInputBlur}
             />
+            
             {
-                suggestions.length > 0 ? (
+                isFocused && suggestions.length > 0 ? (
                     <ul>
                         {suggestions.map(item => <li>{item}</li>)}
                     </ul>
                 ) : null
+                
             }
         </Container>
     );
